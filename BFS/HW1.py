@@ -11,18 +11,19 @@
 import csv
 import numpy as np
 
-def findPath(dicSonParent,path,cost,currentNode):
+def findPaths(dicSonParent,finalPaths,path,cost,currentNode):
     
-    cost += int(dicSonParent[currentNode][0][1])
+    parents = dicSonParent[currentNode]
 
-    currentNode = dicSonParent[currentNode][0][0]
+    path = currentNode + path
 
-    if currentNode == None:
-        return {"path":path,"cost":cost}
+    if parents[0][0] == None:
+        finalPaths.append([path,cost])
+        return
 
-    path.insert(0, currentNode)
-
-    return findPath(dicSonParent,path,cost,currentNode)
+    for parent in parents:
+        
+        findPaths(dicSonParent,finalPaths,path,cost+int(parent[1]),parent[0])
 
 
 with open('HW1.csv', 'r') as file:
@@ -54,9 +55,24 @@ with open('HW1.csv', 'r') as file:
         print(repr(item),":",dic_tree[item])
 
     goal = input('Enter the goal: ')
-    path = findPath(dic_tree,[goal],0,goal)
 
-    print("Path:",path["path"])
-    print("Cost:",path["cost"])
+    finalpaths = []
+    findPaths(dic_tree,finalpaths,"",0,goal)
+
+    print("paths",finalpaths)
+
+    if len(finalpaths) > 0:
+        minPath = finalpaths[0]
+        maxPath = finalpaths[0]
+
+    for path in finalpaths:
+        if path[1] < minPath[1]:
+            minPath = path
+        
+        if path[1] > maxPath[1]:
+            maxPath = path
+
+    print("Min path: ",minPath)
+    print("Max path: ",maxPath)
 
 
